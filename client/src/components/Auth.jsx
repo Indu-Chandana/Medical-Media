@@ -4,8 +4,10 @@ import axios from 'axios';
 
 import signinImage from '../assets/signup.jpg';
 
+const cookies = new Cookies();
+
 const initialState = {
-    fullname: '',
+    fullName: '',
     username: '',
     password: '',
     confirmPassword: '',
@@ -21,10 +23,29 @@ const Auth = () => {
         setForm({ ...form, [e.target.name]: e.target.value }) // denata state eke thiyena values thiyagena aluthen add karapu name ekai value ekai state ekata ganna 
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
 
-        console.log(form);
+        const { fullName, username, password, phoneNumber, avatarURL } = form;
+
+        const URL = 'http://localhost:5000/auth';
+
+        const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login' }`, {
+            username, password, fullName, phoneNumber, avatarURL,
+        })
+
+        cookies.set('token', token);
+        cookies.set('username', username);
+        cookies.set('fullName', fullName);
+        cookies.set('userId', userId);
+
+        if(isSignup){
+            cookies.set('phoneNumber', phoneNumber);
+            cookies.set('avatarURL', avatarURL);
+            cookies.set('hashedPassword', hashedPassword);
+        }
+
+        window.location.reload();
     }
 
     const switchMode = () => {
@@ -39,9 +60,9 @@ const Auth = () => {
                     <form onSubmit={handleSubmit}>
                         {isSignup && (
                             <div className="auth__form-container_fields-content_input">
-                                <label htmlFor="fullname">Full Name</label>
+                                <label htmlFor="fullName">Full Name</label>
                                 <input
-                                name="fullname"
+                                name="fullName"
                                 type="text" 
                                 placeholder="Full Name"
                                 onChange={handleChange}
