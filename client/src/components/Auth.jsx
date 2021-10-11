@@ -17,7 +17,7 @@ const initialState = {
 
 const Auth = () => {
     const [form, setForm] = useState(initialState);
-    const [isSignup, setIsSignup] = useState(true);
+    const [isSignup, setIsSignup] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value }) // denata state eke thiyena values thiyagena aluthen add karapu name ekai value ekai state ekata ganna 
@@ -26,12 +26,12 @@ const Auth = () => {
     const handleSubmit = async(e) => {
         e.preventDefault();
 
-        const { fullName, username, password, phoneNumber, avatarURL } = form;
+        const { username, password, phoneNumber, avatarURL } = form;
 
-        const URL = 'http://localhost:5000/auth';
+        const URL = 'https://medi-care-indu.herokuapp.com/auth';
 
-        const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login' }`, {
-            username, password, fullName, phoneNumber, avatarURL,
+        const { data: { token, userId, hashedPassword, fullName } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login' }`, {
+            username, password, fullName: form.fullName, phoneNumber, avatarURL,
         })
 
         cookies.set('token', token);
